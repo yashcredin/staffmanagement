@@ -1,0 +1,47 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  text-align: center;
+}
+
+.container {
+  width: 80%;
+  margin: auto;
+  padding: 20px;
+}
+
+.staff-form input {
+  display: block;
+  margin: 10px auto;
+  padding: 8px;
+  width: 80%;
+}
+
+button {
+  padding: 8px 12px;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background-color: #f0ad4e;
+  color: white;
+  border: none;
+}
+
+.delete-btn {
+  background-color: #d9534f;
+  color: white;
+  border: none;
+}
+
+.staff-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.staff-table th, .staff-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
