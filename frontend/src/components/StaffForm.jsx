@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { addStaff, updateStaff } from '../api/staffApi';
+import { validateEmail, validateName, validatePhone } from '../../utils/validator';
 
 const StaffForm = ({ selectedStaff, fetchStaff, clearSelection }) => {
   const [staffData, setStaffData] = useState({ name: "", phone: "", email: "", password: "" });
 
   const handleChange = (e) => {
-    setStaffData({ ...staffData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    let errorMessage = "";
+
+    if (name === "name") errorMessage = validateName(value);
+    if (name === "phone") errorMessage = validatePhone(value);
+    if (name === "email") errorMessage = validateEmail(value);
+
+    e.target.setCustomValidity(errorMessage);
+    setStaffData({ ...staffData, [name]: value });
   };
 
 

@@ -1,9 +1,7 @@
 import mongoose from "mongoose";
 
-import { v4 as uuidv4 } from "uuid"; 
-
 const staffSchema = new mongoose.Schema({
-  staffId: { type: String, unique: true, required: true, default: () => `STF-${uuidv4().slice(0, 8).toUpperCase()}` }, 
+  staffId: { type: String, unique: true, required: true, default: () => `STF-${Date.now().toString(36).toUpperCase().slice(-8)}` }, 
   name: { type: String, required: true },
   phone: { 
     type: String, 
