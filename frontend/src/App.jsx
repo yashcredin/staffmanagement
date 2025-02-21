@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import  StaffForm  from './components/StaffForm'
 import StaffTable from './components/StaffTable'
-import { getAllStaff } from './api/staffApi';
+import PersonForm from './components/PersonForm';
+import { getAllPerson } from './api/personApi';
 
 function App() {
   const [staffList, setStaffList] = useState([]);
@@ -10,7 +11,7 @@ function App() {
 
   const fetchStaff = async () => {
     try {
-      const { data } = await getAllStaff();
+      const { data } = await getAllPerson();
       console.log(`data of staff`,data)
       setStaffList(data.data);
     } catch (error) {
@@ -24,8 +25,9 @@ function App() {
   return (
     <>
       <div className="container">
-      <h2>Staff Management</h2>
-      <StaffForm selectedStaff={selectedStaff} fetchStaff={fetchStaff} clearSelection={() => setSelectedStaff(null)} />
+      <h2>Loan Management</h2>
+      <PersonForm fetchStaff={fetchStaff}/>
+      {/* <StaffForm selectedStaff={selectedStaff} fetchStaff={fetchStaff} clearSelection={() => setSelectedStaff(null)} /> */}
       <StaffTable staffList={staffList} fetchStaff={fetchStaff} setSelectedStaff={setSelectedStaff} />
     </div>
     </>

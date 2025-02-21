@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { addStaff, updateStaff } from '../api/staffApi';
-import { validateEmail, validateName, validatePhone } from '../../utils/validator';
+import { validateEmail, validateName, validatePhone } from '../utils/validator';
 
 const StaffForm = ({ selectedStaff, fetchStaff, clearSelection }) => {
   const [staffData, setStaffData] = useState({ name: "", phone: "", email: "", password: "" });
