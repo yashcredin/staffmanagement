@@ -34,6 +34,8 @@ export const addPerson = async (req, res) => {
       });
     }
 
+    console.log(`emi schedule`,emiSchedule)
+
     await EMI.insertMany(emiSchedule)
 
     res.status(201).json({ message: "Person and EMI schedule created successfully", data: newPerson });
@@ -71,3 +73,73 @@ export const deletePerson = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+export const getEmiDetails = async(req, res)=>{
+  try {
+    const emiDetails = await EMI.find({personId : req.params.id});
+    // console.log(emiDetails)
+    if(!emiDetails || emiDetails.length === 0){
+      return res.status(400).json({
+        message : "No Emis Details Are Founds"
+      })
+    }
+
+    return res.status(200).json({
+      message : "Emi Details Fetched Succesfully",
+      data : emiDetails
+    })
+  } catch (error) {
+    console.log(`Error from getEmiDetails`, error , error.message)
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+
+export const updateEmiTransaction = async(req, res)=>{
+  try {
+    const {charges , amountPaid} = req.body;
+
+    if(!charges || !amountPaid){
+      return res.status(404).json({
+        message:"Please Fill the required Fields"
+      })
+    }
+
+    const emiRecord = await EMI.findById(req?.params.emiId);
+    if(!emiRecord){
+      return res.status(404).json({ message: "EMI record not found" });
+    }
+
+    emiRecord.charges = charges;
+    emiRecord.amountPaid = amountPaid;
+    emiRecord.totalEmi = parseFloat(emiRecord.emi) + parseFloat(charges);
+    emiRecord.balanceAmt = emiRecord.totalEmi - parseFloat(amountPaid);
+
+    if(amountPaid > 0){
+      emiRecord.transactionDone = true
+    }
+
+    await emiRecord.save();
+
+    if(emiRecord.balanceAmt>0) {
+      const currentMonth = parseInt(emiRecord.month);
+      const nextMonth = currentMonth + 1;
+      const nextEmiRecord = await EMI.findOne({
+        $and: [
+          { personId: emiRecord.personId },  // Condition 1: Same personId
+          { month: nextMonth.toString() },    // Condition 2: Next Month
+        ] 
+      });
+
+      if (nextEmiRecord) {
+        nextEmiRecord.emi = (parseFloat(nextEmiRecord.emi) + parseFloat(emiRecord.balanceAmt));
+        await nextEmiRecord.save();
+      }
+    }
+
+    res.status(200).json({ message: "EMI details updated successfully", emiRecord });
+
+  } catch (error) {
+    res.status(500).json({ message: "Error updating EMI record", error });
+  }
+}

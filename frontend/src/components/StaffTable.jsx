@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { deletePerson } from "../api/personApi";
+import { deletePerson, getEmiDetailsOnId, updateEMI } from "../api/personApi";
 
 const StaffTable = ({ staffList, fetchStaff, setSelectedStaff }) => {
   const [showModal , setShowModal] = useState(false);
+  const [emiDetails , setEmiDetails] = useState([]);
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this staff?")) {
       await deletePerson(id);
@@ -10,12 +11,38 @@ const StaffTable = ({ staffList, fetchStaff, setSelectedStaff }) => {
     }
   };
 
+  const handleInputChange = (index, field, value) => {
+    const updatedEmiDetails = [...emiDetails];
+    updatedEmiDetails[index][field] = value ; 
+    setEmiDetails(updatedEmiDetails);
+  };
+
   const handleModal = async(id)=>{
     setShowModal(true)
-   
+    try {
+      const {data} = await getEmiDetailsOnId(id);
+      setEmiDetails(data?.data);
+    } catch (error) {
+      console.error("Error fetching EMI details:", error);
+    }
   }
 
-  // console.log(`show modal`, showModal)
+  const closeModal = () => {
+    setShowModal(false);
+    setEmiDetails([]);
+  };
+
+  const handleSave = async (emiId, index) => {
+    const updatedEMI = emiDetails[index];
+
+    try {
+      await updateEMI(emiId, updatedEMI); 
+      alert("EMI details updated successfully!");
+
+    } catch (error) {
+      console.error("Error updating EMI details:", error);
+    }
+  };
 
   return (
     <>
@@ -48,7 +75,62 @@ const StaffTable = ({ staffList, fetchStaff, setSelectedStaff }) => {
         ))}
       </tbody>
     </table>
-    
+    {showModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={closeModal}>&times;</span>
+            <h2>EMI Details</h2>
+            {emiDetails.length > 0 ? (
+              <table className="emiTable">
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    <th>EMI</th>
+                    <th>Charges</th>
+                    <th>Total EMI</th>
+                    <th>Amount Paid</th>
+                    <th>Balance Amount</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {emiDetails.map((emi, index) => (
+                    <tr key={emi._id}>
+                      <td>{emi.month}</td>
+                      <td>{emi.emi}</td>
+                      <td>
+                        <input
+                          type="number"
+                          value={emi.charges}
+                          min={0}
+                          disabled= {emi.transactionDone}
+                          onChange={(e) => handleInputChange(index, "charges", e.target.value)}
+                        />
+                      </td>
+                      <td>{parseFloat(emi.emi) + parseFloat(emi.charges)}</td>
+                      <td>
+                        <input
+                          type="number"
+                          value={emi.amountPaid}
+                          disabled= {emi.transactionDone}
+                          min={0}
+                          onChange={(e) => handleInputChange(index, "amountPaid", e.target.value)}
+                        />
+                      </td>
+                      <td>{parseFloat(emi.emi) + parseFloat(emi.charges) - parseFloat(emi.amountPaid)}</td>
+                      <td>
+                        <button className="save-btn" disabled= {emi.transactionDone}  onClick={() => handleSave(emi._id, index)}>Save</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No EMI records found.</p>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 };

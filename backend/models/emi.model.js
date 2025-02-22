@@ -11,7 +11,8 @@ const emiSchema = new mongoose.Schema({
   charges: { type: String, default: 0 },
   totalEmi: String,
   amountPaid: { type: String, default: 0 },
-  balanceAmt: String
+  balanceAmt: String,
+  transactionDone : {type : Boolean , default : false}
 });
 
 const EMI = mongoose.model("EMI", emiSchema);

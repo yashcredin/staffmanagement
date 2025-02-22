@@ -1,17 +1,17 @@
-export const validateName = (name) => {
+export const validateName = (name , fieldName) => {
   if (!/^[A-Za-z\s]+$/.test(name)) {
-    return "Name cannot contain numbers or special characters.";
+    return `${fieldName} cannot contain numbers or special characters.`;
   }
   return "";
 };
 
-export const validatePhone = (phone) => {
+export const validatePhone = (phone,fieldName) => {
   if (!/^\d+$/.test(phone)) {
-    return "Phone number must contain only digits.";
+    return `${fieldName} must contain only digits.`;
   }
-  if (phone.length !== 10) {
-    return "Phone number must be exactly 10 digits.";
-  }
+  // if (phone.length !== 10) {
+  //   return "Phone number must be exactly 10 digits.";
+  // }
   return "";
 };
 
