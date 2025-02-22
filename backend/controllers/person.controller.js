@@ -115,7 +115,10 @@ export const updateEmiTransaction = async(req, res)=>{
     emiRecord.totalEmi = parseFloat(emiRecord.emi) + parseFloat(charges);
     emiRecord.balanceAmt = emiRecord.totalEmi - parseFloat(amountPaid);
 
-    if(amountPaid > 0){
+    const personRecord = await Person.findById(emiRecord?.personId);
+
+
+    if(amountPaid > 0 && emiRecord.month != personRecord.loanTenure){
       emiRecord.transactionDone = true
     }
 
