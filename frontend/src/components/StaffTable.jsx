@@ -32,7 +32,7 @@ const StaffTable = ({ staffList, fetchStaff, setSelectedStaff }) => {
     setEmiDetails([]);
   };
 
-  const handleSave = async (emiId, index , personId) => {
+  const handleSave = async (emiId, index, personId) => {
     const updatedEMI = emiDetails[index];
 
     try {
@@ -109,7 +109,7 @@ const StaffTable = ({ staffList, fetchStaff, setSelectedStaff }) => {
                           onChange={(e) => handleInputChange(index, "charges", e.target.value)}
                         />
                       </td>
-                      <td>{parseFloat(emi.emi) || 0 + parseFloat(emi.charges) || 0}</td>
+                      <td>{(parseFloat(emi.emi) || 0) + (parseFloat(emi.charges) || 0)}</td>
                       <td>
                         <input
                           type="number"
@@ -119,9 +119,9 @@ const StaffTable = ({ staffList, fetchStaff, setSelectedStaff }) => {
                           onChange={(e) => handleInputChange(index, "amountPaid", e.target.value)}
                         />
                       </td>
-                      <td>{parseFloat(emi.emi) || 0 + parseFloat(emi.charges) || 0 - parseFloat(emi.amountPaid)}</td>
+                      <td>{(parseFloat(emi.emi) || 0) + (parseFloat(emi.charges) || 0) - (parseFloat(emi.amountPaid) || 0)}</td>
                       <td>
-                        <button className="save-btn" disabled={emi.transactionDone} onClick={() => handleSave(emi._id, index , emi.personId)}>Save</button>
+                        <button className="save-btn" disabled={emi.transactionDone} onClick={() => handleSave(emi._id, index, emi.personId)}>Save</button>
                       </td>
                     </tr>
                   ))}
