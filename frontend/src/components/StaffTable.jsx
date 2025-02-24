@@ -3,9 +3,10 @@ import { deletePerson, getEmiDetailsOnId, updateEMI } from "../api/personApi";
 
 const StaffTable = ({ staffList, fetchStaff, setSelectedStaff }) => {
   const [showModal, setShowModal] = useState(false);
+  const [editRow, setEditRow] = useState(null);
   const [emiDetails, setEmiDetails] = useState([]);
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this staff?")) {
+    if (window.confirm("Are you sure you want to delete this person?")) {
       await deletePerson(id);
       fetchStaff();
     }
@@ -13,6 +14,7 @@ const StaffTable = ({ staffList, fetchStaff, setSelectedStaff }) => {
 
   const handleInputChange = (index, field, value) => {
     const updatedEmiDetails = [...emiDetails];
+    // console.log(`updatedEmi Details`, updatedEmiDetails)
     updatedEmiDetails[index][field] = value;
     setEmiDetails(updatedEmiDetails);
   };
@@ -27,9 +29,13 @@ const StaffTable = ({ staffList, fetchStaff, setSelectedStaff }) => {
     }
   }
 
+  const handleEdit = async (id) => {
+    setEditRow(id)
+  }
   const closeModal = () => {
     setShowModal(false);
     setEmiDetails([]);
+    setEditRow(null)
   };
 
   const handleSave = async (emiId, index, personId) => {
@@ -40,6 +46,7 @@ const StaffTable = ({ staffList, fetchStaff, setSelectedStaff }) => {
       alert("EMI details updated successfully!");
       const { data } = await getEmiDetailsOnId(personId);
       setEmiDetails(data?.data);
+      setEditRow(null)
 
     } catch (error) {
       console.error("Error updating EMI details:", error);
@@ -88,6 +95,7 @@ const StaffTable = ({ staffList, fetchStaff, setSelectedStaff }) => {
                   <tr>
                     <th>Month</th>
                     <th>EMI</th>
+                    <th>Adjusted Amount</th>
                     <th>Charges</th>
                     <th>Total EMI</th>
                     <th>Amount Paid</th>
@@ -100,28 +108,30 @@ const StaffTable = ({ staffList, fetchStaff, setSelectedStaff }) => {
                     <tr key={emi._id}>
                       <td>{emi.month}</td>
                       <td>{emi.emi}</td>
+                      <td>{emi.adjustedAmount}</td>
                       <td>
                         <input
                           type="number"
                           value={emi.charges}
                           min={0}
-                          disabled={emi.transactionDone}
+                          disabled={emi.transactionDone || editRow !== emi?._id}
                           onChange={(e) => handleInputChange(index, "charges", e.target.value)}
                         />
                       </td>
-                      <td>{(parseFloat(emi.emi) || 0) + (parseFloat(emi.charges) || 0)}</td>
+                      <td>{(parseFloat(emi.emi) || 0) + (parseFloat(emi.adjustedAmount) || 0) + (parseFloat(emi.charges) || 0)}</td>
                       <td>
                         <input
                           type="number"
                           value={emi.amountPaid}
-                          disabled={emi.transactionDone}
+                          disabled={emi.transactionDone || editRow !== emi?._id}
                           min={0}
                           onChange={(e) => handleInputChange(index, "amountPaid", e.target.value)}
                         />
                       </td>
-                      <td>{(parseFloat(emi.emi) || 0) + (parseFloat(emi.charges) || 0) - (parseFloat(emi.amountPaid) || 0)}</td>
+                      <td>{(parseFloat(emi.emi) || 0) + (parseFloat(emi.adjustedAmount) || 0) + (parseFloat(emi.charges) || 0) - (parseFloat(emi.amountPaid) || 0)}</td>
                       <td>
-                        <button className="save-btn" disabled={emi.transactionDone} onClick={() => handleSave(emi._id, index, emi.personId)}>Save</button>
+                        <button className={`${emi.transactionDone ? "" : "save-btn"}`} disabled={emi.transactionDone} onClick={() => handleSave(emi._id, index, emi.personId)}>Save</button>
+                        <button className={`${emi.transactionDone ? "" : "edit-btn"}`} disabled={emi.transactionDone} onClick={() => handleEdit(emi._id)}>Edit</button>
                       </td>
                     </tr>
                   ))}

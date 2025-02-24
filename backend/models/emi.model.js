@@ -8,6 +8,7 @@ const emiSchema = new mongoose.Schema({
   },
   month: String,
   emi: String,
+  adjustedAmount : {type:String , default : 0},
   charges: { type: String, default: 0 },
   totalEmi: String,
   amountPaid: { type: String, default: 0 },

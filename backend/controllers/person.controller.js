@@ -124,7 +124,7 @@ export const updateEmiTransaction = async(req, res)=>{
 
     await emiRecord.save();
 
-    if(emiRecord.balanceAmt>0) {
+    if(emiRecord.balanceAmt >0 && amountPaid > 0) {
       const currentMonth = parseInt(emiRecord.month);
       const nextMonth = currentMonth + 1;
       const nextEmiRecord = await EMI.findOne({
@@ -135,7 +135,7 @@ export const updateEmiTransaction = async(req, res)=>{
       });
 
       if (nextEmiRecord) {
-        nextEmiRecord.emi = (parseFloat(nextEmiRecord.emi) + parseFloat(emiRecord.balanceAmt));
+        nextEmiRecord.adjustedAmount = (parseFloat(nextEmiRecord.adjustedAmount) + parseFloat(emiRecord.balanceAmt));
         await nextEmiRecord.save();
       }
     }
