@@ -49,4 +49,4 @@ const PersonForm = ({fetchStaff}) => {
   )
 }
 
-export default PersonForm
+export default PersonForm 
